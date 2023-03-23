@@ -1,0 +1,38 @@
+{
+  "name": "simple-quiz-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@sendinblue/client": "^3.1.0",
+    "base64-stream": "^1.0.0",
+    "express": "^4.18.1",
+    "fast-csv": "^4.3.6",
+    "parse": "^3.4.0",
+    "parse-server": "3.6.0",
+    "typescript": "^4.4.3",
+    "xlsx": "^0.18.5"
+  },
+  "scripts": {
+    "postinstall": "npm run setup",
+    "setup": "npm run clean && mkdir -p build/cloud",
+    "clean": "rm -rf build/cloud",
+    "build": "tsc && cp package.json build/ && cp package-lock.json build/ && cp index.js build/ && sed -i '/const Parse =/d' ./build/cloud/*.js && sed -i '/var app = /d' ./build/cloud/*.js",
+    "migrations:dev": "./run_all_migrations.ts --debug",
+    "migrations:prod": "./run_all_migrations.ts",
+    "deploy:dev": "npm run build && npm run migrations:dev && (cd build/; git add . && git commit -a -m 'Update cloud code' ; git push)",
+    "deploy:prod": "npm run build && npm run migrations:prod && (cd build/; git add . && git commit -a -m 'Update cloud code' ; git push production)",
+    "start": "node ./index.js",
+    "docker:build": "docker build --pull --rm -f \"Dockerfile\" -t cloudcode:latest \".\"",
+    "docker:run": "docker run --rm -d  -p 1337:1337/tcp cloudcode:latest",
+    "docker": "npm run docker:build && npm run docker:run"
+  },
+  "author": "Radu Dinca",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/base64-stream": "^1.0.1",
+    "@types/express": "^4.17.13",
+    "@types/parse": "^2.18.13",
+    "@types/request": "^2.48.8"
+  }
+}

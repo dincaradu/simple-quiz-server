@@ -1,0 +1,9 @@
+# simple-quiz-server
+
+## common folders
+node_modules/
+build/
+logs/
+
+## other folders
+.history/
